@@ -94,3 +94,31 @@ Types of Menu
 		settings_field('myplugin_options');
 		do_settings_sections('myplugin');
 		submit_butoon();
+	
+	creating sub level menu
+	//setting
+	add_submenu_page(
+	);
+	
+	adding settings to menu
+	//display the plugin settings page
+function amitem_display_settings_page(){
+    //check if user is allowed access
+    if(!current_user_can('manage_options'))
+         wp_die('You do not have sufficient permissions to access this page.');;
+
+    //display output
+    echo '<div class="wrap">';
+    echo '<h1>'.esc_html(get_admin_page_title()).'</h1>';
+    echo '<form action="options.php" method="post">';
+        settings_fields('amitem_options');
+        settings_fields('amitem');
+        submit_button();
+    echo '</form>';
+    echo '</div>';
+	}
+	
+to get plugin path
+plugin_dir_path( __FILE__ )
+
+https://developer.wordpress.org/?s=page
