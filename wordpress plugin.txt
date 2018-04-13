@@ -1,0 +1,96 @@
+//CREATE a folder under plugins
+
+//create a new file [plugin_name.php]
+//Add proper file header - meta data about the plugin
+
+<?php
+/*
+Plugin Name: [nameof plugin]
+Description: [description name]
+Plugin URI: [plugin uri]
+Author: Jeff Starr
+Version: 1.0
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.text
+*/
+
+//plugins can be install on plugin directory or in mu-plugins
+//mu-plugins - MUST-USE plugins
+	always activated
+	no need to log in to the admin area
+	loaded before normal plugins
+	no automatic/one-click updates
+	no updates notification
+	activitaion hooks do not work with must-use plugins
+	must be single PHP Files
+	
+//NAME GUIDELINES
+1. plugin name should match the main plugin file
+2. should match the folder
+3. search on potential names (existing or not)
+
+
+//wordpress api
+1. dashboard widgets API
+2. Database API
+3. HTTP API
+4. REST API
+5. File Header API
+4. Filesystem API
+5. Metadata API
+6. Options API
+
+
+//Wordpress api is all about hooks
+2 type of HOOKS
+	1. actions
+		- run custom code. 
+	2. filter
+		- modify data during the execution of data.
+		
+ex.
+function myplugin_action_hook_example(){
+	wp_mail('email@x.com','subject','message');
+}
+add_action ('init', 'myplugin_action_hook_example');
+
+
+// to check if function existing
+if(! function_exists('my_plugin_name')){
+//dp
+}
+
+***Creating plugins and directory Structure
+
+admin - used in wordpress admin area
+	has CSS  ., JS and asset
+public -  has CSS, JS and asset
+includes - can be use anywhere
+languages - other languages
+
+creating a admin item 
+Types of Menu
+	Top-Level Menu
+		May contain submenus
+		Best for plugins with multiple settings page
+	Sub-Level
+		Added to an existing top-level menu
+		best for plugins with only one settings
+
+
+	Creating top level menu
+	
+	check if has permission to access pagfe
+	//display the plugin settings page
+	function amitem_display_settings_page(){
+		//check if user is allowed access
+		if(!current_user_can('manage_options'))
+			return;
+	}
+	 on displaying the output 
+	 use echo esc_html(get_admin_page_title()) on displaying name
+	 form action must be options.php method is post ---this is required
+	 within form may use 3 wordpress function to add all the required markup
+		settings_field('myplugin_options');
+		do_settings_sections('myplugin');
+		submit_butoon();
