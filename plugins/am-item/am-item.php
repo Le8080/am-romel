@@ -103,7 +103,8 @@ function amitem_get_object(){
     $postobj->website = "website";
     $postobj->facebook = "facebook";
     $postobj->twitter = "twitter";
-    $postobj->twitter = "pricerange";
+    $postobj->isverified = "isverified";
+    $postobj->pricerange = "pricerange";
     return $postobj;
 }
 function amitem_create_metabox(){
@@ -162,9 +163,15 @@ function amitem_save_metabox()
             $is_valid_none = true;
         }
     }
+    
     if($is_autosave || $is_revision || $is_valid_none) return;
+    $ampost = [];
+    $obj = amitem_get_object();
+    foreach($obj as $am){
+        $ampost[$am]=$_POST[$am];
+    }
     if(array_key_exists('isverified',$_POST)){
-        update_post_meta($post->ID, '_amitem_details_meta_key', $_POST);
+        update_post_meta($post->ID, '_amitem_details_meta_key', $ampost);
     }
 }   
 add_action('init', 'amitem_add_menu');
@@ -172,4 +179,11 @@ add_action( 'add_meta_boxes', 'amitem_create_metabox' );
 add_action( 'save_post', 'amitem_save_metabox' );   
 
 
-require_once plugin_dir_path( __FILE__ ).'/admin/searchwidget.php';
+require_once plugin_dir_path( __FILE__ ).'/widgets/searchwidget.php';
+require_once plugin_dir_path( __FILE__ ).'/widgets/listingwidget.php';
+
+function amitem_register_widget(){
+    register_widget('Amitem_FilterList_Widget');
+    register_widget('Amitem_Search_Widget');
+}
+add_action('widgets_init', 'amitem_register_widget');
