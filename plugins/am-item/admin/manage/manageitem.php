@@ -15,45 +15,36 @@ if(!defined('ABSPATH')){
 class manageitem {
 
     var $id;
-    var $itemobj;
+    var $post;
+    var $postobj;
     
     //construct 
     public function __construct($id = NULL){
-        $this->id = $id;
+        global $post;
+        $this->id = $post->id;
+        $this->post = $post;
         //if has id prepare the item object
 
-        if($id){
-            $this->prepare_item;
-        }
     }
 
-    private function prepare_item(){
-        
+    public function amitem_metabox(){
+ 
     }
+   
     
-    public function item_form(){
-        $id = $this->id;
-        $default_fields = $this->get_default_fields();
-        $fields_to_create = $default_fields;
-        foreach ( $fields_to_create as &$f) {
-            $field = new WPBDP_FormField( $f );
-            $field->save();
-        }
+    public function amitem_details_metabox($post){
+        $value = get_post_meta($post->ID, '_amitem_details_meta_key', true);
+        wp_nonce_field (basename(__FILE__), 'amitem_details_metabox_key');
+        ?>
+        <label for="amitem_details_metabox">Details</label>
+        <select id="amitem_details_metabox" name="place">
+            <option value="2"></option>
+        </select> 
+        <?php
     }
-    public function default_fields(){
-        $default_fields = array(
-            'Location' => array( 'label' =>'Location', 'field_type' => 'textfield', 'association' => 'meta', 'weight' => 1,
-            'display_flags' => array( 'excerpt', 'listing', 'search' ), 'tag' => 'location' )
-        );
 
-        if ( $id ) {
-            if ( isset( $default_fields[ $id ] ) )
-                return $default_fields[ $id ];
-            else
-                return null;
-        }
+    public function amitem_save_object(){
 
-        return $default_fields;
     }
 
 }

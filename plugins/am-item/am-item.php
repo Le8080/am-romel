@@ -83,73 +83,93 @@ function amitem_add_menu(){
 }
 function amitem_metabox_callback(){
     add_meta_box( 'amitem-info',
-    'AutoMeans Listing',
+    'AutoMeans Details',
      'amitem_metabox',
      'amitem',
      'normal',
      'core' 
     );
 }
-function amitem_metabox(){
-    global $post;
-    $custom = get_post_custom($post->ID);
-    $location = isset($custom["location"][0])?$custom["location"][0]:'';
-    $contactnum = isset($custom["contactnum"][0])?$custom["contactnum"][0]:'';
-    $sitelink = isset($custom["sitelink"][0])?$custom["sitelink"][0]:'';
-    $fblink = isset($custom["fblink"][0])?$custom["fblink"][0]:'';
+function amitem_get_object(){
+
+    $postobj = new stdClass();
+    $postobj->mobilenumber = "mobilenumber";
+    $postobj->phonenumber = "phonenumber";
+    $postobj->emailaddress = "emailaddress";
+    $postobj->loccity = "loccity";
+    $postobj->locprovince = "locprovince";
+    $postobj->longitude = "longitude";
+    $postobj->latitude = "latitude";
+    $postobj->website = "website";
+    $postobj->facebook = "facebook";
+    $postobj->twitter = "twitter";
+    $postobj->twitter = "pricerange";
+    return $postobj;
+}
+function amitem_create_metabox(){
+    $metaboxes =array('amitem_details_metabox');
+    foreach($metaboxes as $metabox){
+        add_meta_box(
+            $metabox, //unique id of metabox
+            'Automeans Details', //title of metaboc
+            $metabox,   // callback function
+            'amitem', //post type.
+            'normal',
+            'core' 
+        );
+    }
+
+}
+function amitem_details_metabox($post){
+    $postdata = get_post_meta($post->ID, '_amitem_details_meta_key', true);
+    wp_nonce_field (basename(__FILE__), 'amitem_details_metabox_nonce');
     ?>
-    <label>Location: </label><input name="location" value="<?php echo $location; ?>">
+    <input type="checkbox" name="isverified" id="amitem_details_metabox" value="1"<?php checked(@$postdata['isverified'],'1');?>> <label>Is Verified  </label> 
 
-    <label>Contact Details: </label><input name="contactnum" value="<?php echo $contactnum; ?>">
-    <label>Location: </label><input name="sitelink" value="<?php echo $sitelink; ?>">
-    <label>Location: </label><input name="fblink" value="<?php echo $fblink; ?>">
+    <div class="row">
+        <p>Contact Details</p>
+        <div><label>Mobile Number : &nbsp; </label></div><div><input name="mobilenumber" value="<?php echo @$postdata['mobilenumber']; ?>"></div>
+        <div><label>Phone Number : &nbsp; </label></div><div><input name="phonenumber" value="<?php echo @$postdata['phonenumber']; ?>"></div>
+        <div><label>Email address : &nbsp; </label></div><div><input name="emailaddress" value="<?php echo @$postdata['emailaddress']; ?>" type="email"></div>
+    </div>
+    <div class="row">
+        <p>Location</p>
+        <div><label>City : &nbsp; </label></div><div><input name="loccity" value="<?php echo @$postdata['loccity']; ?>"></div>
+        <div><label>Province : &nbsp; </label></div><div><input name="locprovince" value="<?php echo @$postdata['locprovince']; ?>"></div>
+        <div><label>Longitude : &nbsp; </label></div><div><input name="longitude" value="<?php echo @$postdata['longitude']; ?>"></div>
+        <div><label>Latitude : &nbsp; </label></div><div><input name="latitude" value="<?php echo @$postdata['latitude']; ?>"></div>
+     </div>
+    <div class="row">
+        <p>Social Links</p>
+        <div><label>Website :</label></div><div><input name="website" value="<?php echo @$postdata['website']; ?>"></div>
+        <div><label>Facebook : </label></div><div><input name="facebook" value="<?php echo @$postdata['facebook']; ?>"></div>
+        <div><label>Twitter : </label></div><div><input name="twitter" value="<?php echo @$postdata['twitter']; ?>"></div>
+    </div>
+    <div class="row">
+     <div><label>Price Range : </label></div><div><input name="pricerange" value="<?php echo @$postdata['pricerange']; ?>"></div>
+    </div>
     <?php
-
 }
-function prefix_teammembers_save_post()
-{
-    if(empty($_POST)) return; //why is prefix_teammembers_save_post triggered by add new? 
+function amitem_save_metabox()
+{  
     global $post;
-    update_post_meta($post->ID, "function", $_POST["function"]);
+    $is_autosave = wp_is_post_autosave($post->ID);
+    $is_revision = wp_is_post_revision($post->ID);
+    $is_valid_none = false;
+  
+    if(isset($_POST['isverified'])){
+        if(wp_verify_nonce ($POST['amitem_details_metabox_nonce'],basename(__FILE__))){
+            $is_valid_none = true;
+        }
+    }
+    if($is_autosave || $is_revision || $is_valid_none) return;
+    if(array_key_exists('isverified',$_POST)){
+        update_post_meta($post->ID, '_amitem_details_meta_key', $_POST);
+    }
 }   
-
-
-function amitem_add_menu_prepare(){
-    require_once plugin_dir_path( __FILE__ ).'/admin/manage/manageitem.php';
-    $item_form = new manageitem($id);
-    $item_form->item_form;
-
-}
-//display list of item
-// function amitem_display_cms(){
-//     //check if user is allowed access
-//     if(!current_user_can('manage_options'))
-//          wp_die('You do not have sufficient permissions to access this page.');;
-
-//     //display output
-//     echo '<div class="wrap">';
-//     echo '<h1>'.esc_html(get_admin_page_title()).'</h1>';
-//     echo '<a href="/wp-admin/admin.php?page=amitem-new" class="page-title-action">Add New</a>';
-//     require_once plugin_dir_path( __FILE__ ).'/admin/manage/itemlist.php';
-    
-//     //initialize table
-//     $amtb = new AM_item_table();
-//     echo '<div class="wrap">'; 
-//     $amtb->prepare_items(); 
-//     $amtb->display(); 
-//     echo '</div>'; 
-//     echo '</div>';
-
-// }
-function sample_data($post) {
-    // Add your meta data to the post with the ID $post->ID
-    add_post_meta($post->ID, 'key', 'value');
-
-    // and then copy&past the metabox content from the function post_custom_meta_box()
-}
 add_action('init', 'amitem_add_menu');
-add_action( 'add_meta_boxes', 'amitem_metabox_callback' );
-add_action( 'save_post_prefix-teammembers', 'prefix_teammembers_save_post' );   
+add_action( 'add_meta_boxes', 'amitem_create_metabox' );
+add_action( 'save_post', 'amitem_save_metabox' );   
 
 
-
+require_once plugin_dir_path( __FILE__ ).'/admin/searchwidget.php';
