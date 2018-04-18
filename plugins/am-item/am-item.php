@@ -181,9 +181,11 @@ add_action( 'save_post', 'amitem_save_metabox' );
 
 require_once plugin_dir_path( __FILE__ ).'/widgets/searchwidget.php';
 require_once plugin_dir_path( __FILE__ ).'/widgets/listingwidget.php';
+require_once plugin_dir_path( __FILE__ ).'/widgets/resultwidget.php';
 
 function amitem_register_widget(){
     register_widget('Amitem_FilterList_Widget');
     register_widget('Amitem_Search_Widget');
+    register_widget('Amitem_Result_Widget');
 }
 add_action('widgets_init', 'amitem_register_widget');

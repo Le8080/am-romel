@@ -11,16 +11,16 @@ License URI: https://www.gnu.org/licenses/gpl.html
 if(!defined('ABSPATH')){
     exit;
 }
-class Amitem_FilterList_Widget extends WP_Widget{
+class Amitem_Result_Widget extends WP_Widget{
 
     //set up widget
     public function __construct(){
 
         $options = array(
-            'classname' => 'amitem_filterlist_widget',
-            'description' => 'Automeans Filtered List'
+            'classname' => 'amitem_result_widget',
+            'description' => 'Automeans Details'
         );
-        parent::__construct('amitem_filterlist_widget', 'Filtered List', $options);
+        parent::__construct('amitem_result_widget', 'Automeans Details', $options);
     }
 
     //output widget content
@@ -31,24 +31,9 @@ class Amitem_FilterList_Widget extends WP_Widget{
         require_once plugin_dir_path( __FILE__ ).'amitem_obj.php';
         $amitemobj = new amitem_obj();
         $datas = $amitemobj->get_values();
-        $results = $amitemobj->list_results_values($_GET['keywords']);
-        foreach($results as $result){
-            $thumb = get_the_post_thumbnail( $result->post_id,'post-thumbnail');
         ?>
-        <div>
-            <a href="http://lkd/resultpage/?id=<?php echo $result->post_id; ?> ">
-            <div><?php echo (!$thumb ? 'helo' :$thumb); ?></div>
-            <div>
-            <h3><?php echo $result->post_title;?></h3>
-            <p><?php echo $result->post_content;?></p>
 
-            <span><?php echo $result->locprovince;?></span>
-            </a>
-            </div>
-
-        </div>
         <?php
-        }
     }
 
     //output widget form fields

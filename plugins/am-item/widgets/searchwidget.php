@@ -33,10 +33,10 @@ class Amitem_Search_Widget extends WP_Widget{
         $datas = $amitemobj->get_values();
         ?>
         <form role="search" method="get" id="amitem_search" action="http://lkd/result-page/">
-        <input type="search" name="keywords">
-        <select name="location">
+        <input type="text" name="keywords">
+        <!-- <select name="location">
             
-        </select>
+        </select> -->
         <button>search</button>
         </form>
         <?php
