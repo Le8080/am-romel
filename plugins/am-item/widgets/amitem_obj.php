@@ -21,14 +21,9 @@ class amitem_obj{
     }
     public function get_values(){
        global $wpdb;
-       //$results =  $wpdb->get_results("SELECT DISTINCT {$wpdb->prefix}posts FROM wp_posts");
         $pms = $this->get_postmeta_data();
         $result = array();
-       // var_dump(get_post_meta(120, '_amitem_details_meta_key', true));
         foreach ($pms as $p =>$pm){
-         //   $result[$pm->post_id] =  get_post_meta($pm->post_id, '_amitem_details_meta_key', true);
-          //  array_merge(array('meta_id'=>$pm->meta_id),$result[$pm->post_id]);
-          //get_the_post_thumbnail( int|WP_Post $post = null, string|array $size = 'post-thumbnail', string|array $attr = '' )
           $result[$pm->post_id] = array_merge(get_post_meta($pm->post_id, '_amitem_details_meta_key', true),
                                     array('meta_id'=>$pm->meta_id,
                                         'meta_key'=>$pm->meta_key,
@@ -52,35 +47,96 @@ class amitem_obj{
 
        return $obj = get_post_type_object( 'amitem' ,$output);
     }
-    public function list_results_values( $key = '',$filter = NULL ) {
+    public function list_results_values( $key = '',$filter = array() ,$location = 'All') { 
         global $wpdb;
-        if(!$filter){
+        if(empty($filter)){
             $filter = array('post_title');
         }
         $i = 0;
         $fii = '';
+        $taxonomies = '';
         foreach($filter as $fi){
-            if(!$i)
-              $fii = " AND ".$fi." LIKE '%".$key."%'";
-            else $fii .= " OR ".$fi." LIKE '%".$key."%'";
-            $i++;
+            if(preg_match('/(post)/',$fi)){
+                if(!$i)
+                $fii = " ".$fi." LIKE '%".$key."%'";
+                else $fii .= " OR ".$fi." LIKE '%".$key."%'";
+                $i++;
+            }else{
+                $p = get_terms('Automeanstag');
+                $j = get_terms('AutomeansCateg');
+                $customtax = array_merge($p,$j);
+                if(!empty($customtax)){
+                    foreach($customtax as $t){
+                        if(stripos($t->name,$key) !== false){
+                            $taxonomies .= $t->term_id.',';
+                        }
+                    } 
+                }
 
+            }
         }
-        $rs = $wpdb->get_results("
-            SELECT pm.*,p.*
-            FROM {$wpdb->posts} p join {$wpdb->postmeta} pm on pm.post_id=p.ID
-            where p.post_type='amitem' and pm.meta_key ='_amitem_details_meta_key' ".$fii);
+        $taxonomies = trim($taxonomies,',');
+        if(!empty($taxonomies)){
+            $tax = ' p.ID IN ( SELECT object_id FROM automea.wp_term_relationships where term_taxonomy_id IN ('.$taxonomies.'))';
+        }
+        $i = 0;
+        $locations = '';  
+        if($location == 'All' OR !$location){
+            $location = ' ';
+        }else{
+            $location = explode(',', $location);
+            foreach($location as $lo){
+                $lo = preg_replace('/\s+/', '', $lo);
+                if(!$i)
+                    $locations .= "(pm.meta_value LIKE '%\"".$lo."\"%'";
+                else $locations .= "AND pm.meta_value LIKE '%\"".$lo."\"%'";
+
+                $i++;
+            }
+            $locations = ' AND '. $locations.')';
+        }
+      
+        if($fii AND $tax){
+            $query = 'AND ('.$fii.' OR '.$tax.')';
+        }else if($fii AND !$tax){
+            $query = 'AND ('.$fii.')';
+        }else if(!$fii AND $tax){
+            $query = 'AND ('.$tax.')';
+        }
+        $sql ="SELECT p.*
+                FROM {$wpdb->posts} p 
+                      left join {$wpdb->postmeta} as pm on pm.post_id = p.ID
+                where p.post_type='amitem' AND p.post_status ='publish'  AND pm.meta_key = '_amitem_details_meta_key' ".$query.$locations; 
+              
+        $rs = $wpdb->get_results($sql);
         return $rs;
 
     }
-    public function get_city(){
+    public function get_amitem_obj($value = '',$field = '',$iscustom = 0){
+        global $wpdb;
+        $filter = '';
+        if($value AND $field){
+            if(!$iscustom){
+                if(is_string($value))
+                        $value = '"'.$value.'"';
+                $filter = ' AND '.$field.' ='.$value;
+            }else{
+                $filter = ' AND pm.meta_value LIKE "%'.$value.'%"';
+            }
+        }
+        $sql = "SELECT pm.*,p.*
+                FROM {$wpdb->posts} p join {$wpdb->postmeta} pm on pm.post_id=p.ID
+                where p.post_type='amitem' and pm.meta_key ='_amitem_details_meta_key' and post_status ='publish' ".$filter."";
+        
+        $rs = $wpdb->get_results($sql);
+        foreach($rs as $r){
+            $meta  = get_post_meta($r->post_id, '_amitem_details_meta_key', true);
+            if($value == $meta[$field]){
+                return $r;
+            }
 
-    }
-    public function get_item($id){
-
-    }
-    public function search_item(){
-
+        }
+        return;
     }
 
 }

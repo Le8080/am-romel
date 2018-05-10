@@ -21,7 +21,7 @@ if (!defined('AMITEM_BASENAME'))
     define('AMITEM_BASENAME', plugin_basename(__FILE__));
 
 function amitem_add_menu(){
-    $icon_url = WP_PLUGIN_URL.'/am-item/admin/icon.png';
+    $icon_url = WP_PLUGIN_URL.'/am-item/admin/amfavicon.png';
     //register post
     register_post_type('amitem',
         array(
@@ -96,15 +96,22 @@ function amitem_get_object(){
     $postobj->mobilenumber = "mobilenumber";
     $postobj->phonenumber = "phonenumber";
     $postobj->emailaddress = "emailaddress";
+    $postobj->locno = "locno";
+    $postobj->locstreet = "locstreet";
+    $postobj->locbarangay = "locbarangay";
     $postobj->loccity = "loccity";
     $postobj->locprovince = "locprovince";
-    $postobj->longitude = "longitude";
-    $postobj->latitude = "latitude";
+    $postobj->loccountry = "loccountry";
+    // $postobj->longitude = "longitude";
+    // $postobj->latitude = "latitude";
+    $postobj->map = "map";
     $postobj->website = "website";
     $postobj->facebook = "facebook";
     $postobj->twitter = "twitter";
     $postobj->isverified = "isverified";
     $postobj->pricerange = "pricerange";
+    $postobj->ref = "ref";
+    $postobj->shortdesc = "shortdesc";
     return $postobj;
 }
 function amitem_create_metabox(){
@@ -126,28 +133,53 @@ function amitem_details_metabox($post){
     wp_nonce_field (basename(__FILE__), 'amitem_details_metabox_nonce');
     ?>
     <input type="checkbox" name="isverified" id="amitem_details_metabox" value="1"<?php checked(@$postdata['isverified'],'1');?>> <label>Is Verified  </label> 
-
-    <div class="row">
+    <div><label>Price Range : </label>
+        <select name="pricerange" >
+        <option value="1" <?php selected (@$postdata['pricerange'],1); ?>>1</option>
+        <option value="2" <?php selected (@$postdata['pricerange'],2); ?>>2</option>
+        <option value="3" <?php selected (@$postdata['pricerange'],3); ?>>3</option>
+        <option value="4" <?php selected (@$postdata['pricerange'],4); ?>>4</option>
+        <option value="5" <?php selected (@$postdata['pricerange'],5); ?>>5</option>
+         </select>
+    </div>
+    <div><label>Unique Identifier* : &nbsp; </label></div><div><input required="required" name="ref" value="<?php echo @$postdata['ref']; ?>" type="text"></div>
+    <div>
+        <p>Short Description</p>
+        <?php echo wp_editor(@$postdata['shortdesc'],'shortdesc');?>
+    </div>
+    <div>
         <p>Contact Details</p>
         <div><label>Mobile Number : &nbsp; </label></div><div><input name="mobilenumber" value="<?php echo @$postdata['mobilenumber']; ?>"></div>
         <div><label>Phone Number : &nbsp; </label></div><div><input name="phonenumber" value="<?php echo @$postdata['phonenumber']; ?>"></div>
         <div><label>Email address : &nbsp; </label></div><div><input name="emailaddress" value="<?php echo @$postdata['emailaddress']; ?>" type="email"></div>
     </div>
-    <div class="row">
+    <div>
         <p>Location</p>
-        <div><label>City : &nbsp; </label></div><div><input name="loccity" value="<?php echo @$postdata['loccity']; ?>"></div>
-        <div><label>Province : &nbsp; </label></div><div><input name="locprovince" value="<?php echo @$postdata['locprovince']; ?>"></div>
-        <div><label>Longitude : &nbsp; </label></div><div><input name="longitude" value="<?php echo @$postdata['longitude']; ?>"></div>
-        <div><label>Latitude : &nbsp; </label></div><div><input name="latitude" value="<?php echo @$postdata['latitude']; ?>"></div>
+        <label>For accuracy please search the address here</label>
+        <div id="locationField">
+        <input id="autocomplete" placeholder="Enter your address"
+             onFocus="geolocate()" type="text"></input>
+        </div>
+        <div><label>Street : &nbsp; </label></div><div><input name="locstreet" value="<?php echo @$postdata['locstreet']; ?>" id="route" class="field" ><input name="locno" value="<?php echo @$postdata['locno']; ?>" id="street_number" class="field"></div>
+        <div><label>Barangay : &nbsp; </label></div><div><input name="locbarangay" value="<?php echo @$postdata['locbarangay']; ?>" id="sublocality_level_1"class="field" ></div>
+        <div><label>City : &nbsp; </label></div><div><input name="loccity" value="<?php echo @$postdata['loccity']; ?>" id="locality" class="field"></div>
+        <div><label>Province : &nbsp; </label></div><div><input name="locprovince" value="<?php echo @$postdata['locprovince']; ?>" id="administrative_area_level_2" class="field" ></div>
+        <div><label>Country : &nbsp; </label></div><div><input name="loccountry" value="<?php echo @$postdata['loccountry']; ?>" id="country" class="field" ></div>
+
+
+        <!-- <div><label>Longitude : &nbsp; </label></div><div><input name="longitude" value="<?php echo @$postdata['longitude']; ?>"></div>
+        <div><label>Latitude : &nbsp; </label></div><div><input name="latitude" value="<?php echo @$postdata['latitude']; ?>"></div> -->
+        <div><label>Map : &nbsp; </label></div><div><textarea name="map" rows="10" cols="80"> <?php echo @$postdata['map']; ?></textarea></div>
      </div>
-    <div class="row">
+    <div>
         <p>Social Links</p>
         <div><label>Website :</label></div><div><input name="website" value="<?php echo @$postdata['website']; ?>"></div>
         <div><label>Facebook : </label></div><div><input name="facebook" value="<?php echo @$postdata['facebook']; ?>"></div>
         <div><label>Twitter : </label></div><div><input name="twitter" value="<?php echo @$postdata['twitter']; ?>"></div>
     </div>
-    <div class="row">
-     <div><label>Price Range : </label></div><div><input name="pricerange" value="<?php echo @$postdata['pricerange']; ?>"></div>
+    <div>
+
+
     </div>
     <?php
 }
@@ -174,6 +206,19 @@ function amitem_save_metabox()
         update_post_meta($post->ID, '_amitem_details_meta_key', $ampost);
     }
 }   
+function amitem_get_all_object(){
+    $obj = amitem_get_object();
+    $obj->post_title = 'post_title';
+    $obj->post_date = 'post_date';
+    $obj->post_content = 'post_content';
+    $obj->post_status = 'post_status';
+    $obj->post_name = 'post_name';
+    $obj->featuredimage = 'featuredimage';
+    $obj->featuredimage = 'featuredimageurl';
+    $obj->tags = 'tags';
+    $obj->category = 'category';
+    return $obj;
+}
 add_action('init', 'amitem_add_menu');
 add_action( 'add_meta_boxes', 'amitem_create_metabox' );
 add_action( 'save_post', 'amitem_save_metabox' );   
@@ -182,6 +227,7 @@ add_action( 'save_post', 'amitem_save_metabox' );
 require_once plugin_dir_path( __FILE__ ).'/widgets/searchwidget.php';
 require_once plugin_dir_path( __FILE__ ).'/widgets/listingwidget.php';
 require_once plugin_dir_path( __FILE__ ).'/widgets/resultwidget.php';
+require_once plugin_dir_path( __FILE__ ).'/includes/core_function.php';
 
 function amitem_register_widget(){
     register_widget('Amitem_FilterList_Widget');
@@ -189,3 +235,67 @@ function amitem_register_widget(){
     register_widget('Amitem_Result_Widget');
 }
 add_action('widgets_init', 'amitem_register_widget');
+
+function amitem_shortcode( $atts ) {
+    extract( shortcode_atts( array( 'item' => 'post_title', 'ref' => '' ), $atts ) );
+    require_once plugin_dir_path( __FILE__ ).'/widgets/amitem_obj.php';
+
+    if(!$ref && !$_GET['ref'])
+     return '';
+    
+    if(!$ref)
+       $ref = $_GET['ref'];  
+    $amitemobj = new amitem_obj();
+    $result = $amitemobj->get_amitem_obj($ref,'ref',1);
+    if(!empty($result)){
+        $otherinfo = get_post_meta($result->post_id, '_amitem_details_meta_key', true);
+        $re = (array)$result;
+        $result = array_merge($otherinfo,$re);
+    }
+    if($item=='featuredimage'){
+       return get_the_post_thumbnail($result['post_id'],'thumbnail');
+    }else if($item=='featuredimageurl'){
+     return get_the_post_thumbnail_url($result['post_id']);
+    }else if($item == 'tags'){
+        $parent = get_terms('Automeanstag',array('parent'=>0));
+        $data = '';
+        foreach($parent as $p){
+            $data .='<p>'.$p->name;
+            $tags = wp_get_post_terms($result['post_id'],
+            'Automeanstag' ,array('parent'=>$p->term_id));
+            if(!empty($tags)){
+                $tg =' :';
+                foreach ($tags as $tag){
+                    $tg .= ' '.$tag->name . ',';
+                }
+            }
+            
+                $data .= rtrim($tg,',').'</p>';
+        }
+        if(!empty(wp_get_post_terms($result['post_id'],'Automeanstag')))
+            return $data;
+    }
+    else if($item == 'category'){
+        $parent = get_terms('AutomeansCateg',array('parent'=>0));
+        $data = '';
+        foreach($parent as $p){
+            $data .='<p>'.$p->name;
+            $tags = wp_get_post_terms($result['post_id'],
+            'AutomeansCateg' ,array('parent'=>$p->term_id));
+            if(!empty($tags)){
+                $tg =' :';
+                foreach ($tags as $tag){
+                    $tg .= ' '.$tag->name . '<br>';
+                }
+            }
+            
+                $data .= rtrim($tg,',').'</p>';
+        }
+        if(!empty(wp_get_post_terms($result['post_id'],'Automeanstag')))
+            return $data;
+    }
+    else{ return $result[$item];}
+  
+}
+  add_shortcode( 'amitem', 'amitem_shortcode' );
+  add_action( 'admin_enqueue_scripts', 'amitem_script' );
