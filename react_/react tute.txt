@@ -1,0 +1,105 @@
+add chrome developer react extensions
+
+*JSX - javascript as XML
+*Babel - compile JSX into javascript
+to use babel
+	call the library
+	relace script type to text/babel instead of text/javascript
+	
+* Creating components on react
+1. ES6 
+	ex. 
+	    <script type="text/babel">
+        class Hello extends React.Component{
+            render() {
+                return (
+                    <div>
+                        <h1>Hello World Leah</h1>
+                    </div>
+                )
+            }
+        }
+        ReactDOM.render(
+            <Hello />,
+            document.getElementById('react-container')
+        )
+    </script>
+2. stateless functional components
+    <script type="text/babel">
+        const Banner = () =><h1>Hello stateles</h1> //single line
+        const Multiplejsxtag = () => (
+            <div>
+                <h1>
+                   Multiple
+                </h1>
+                <p>Hello</p>
+            </div>
+            )
+        ReactDOM.render(
+            <Multiplejsxtag />,
+            document.getElementById('react-container')
+        )
+    </script>
+	
+* Props - can be use to display dynamic data with react
+passing values on react 
+	string use ""
+	number use {}
+	sample props
+	    <script type="text/babel">
+
+        class Hello extends React.Component {
+            render() {
+                return (
+                    <div>
+                        <h1>Hello {this.props.firstname}</h1>
+                        <p> learning {this.props.vers}</p>
+                    </div>
+                )
+            }
+        }
+
+        const HelloStateless = (props) => <h1>Heello {props.firstname} {props.vers}</h1>
+        const HelloStatelessex1 = ({firstname}) => <h1>Heello {firstname} </h1>
+        ReactDOM.render(
+            <HelloStateless firstname="Dino" vers={16}/>,
+            document.getElementById('react-container')
+        )
+    </script>
+	
+* State
+ex 
+        class Checboox extends React.Component{
+            constructor(props){ 
+                super(props)
+                this.state ={
+                    checked: false
+                }
+                this.handleCheck = this.handleCheck.bind(this)
+            }
+            handleCheck(){
+                this.setState({
+                    checked: !this.state.checked
+                })
+            }
+            render(){
+                var msg
+                if(this.state.checked){
+                    msg ='checked'
+                }else{
+                    msg= 'nope'
+                }
+                return(
+                    <div><input type="checkbox" onChange={this.handleCheck}/>
+                    <p>This box {msg} </p>
+                    </div>
+
+                )
+            }
+        }
+        ReactDOM.render(
+            <Checboox/>,
+            document.getElementById('react-container')
+        )
+    </script>
+
