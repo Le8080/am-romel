@@ -10,11 +10,14 @@
     <title>React-Directory</title>
 </head>
 <body>
-    <?php require_once('directory.php'); 
-        $db = DBobject::DBInstance();
-        $mysqli = $db->getDBConnect(); 
-        $mysqli = $db->get_records('SELECT  * FROM books where name like (:name)',array('name'=>"'%i%'",'id'=>'2','dsad'=>4));
-        di($mysqli);
+    <?php 
+        require_once('db.php'); 
+        $DB = DBobject::DBInstance();
+        global $DB;
+        require_once('directory.php'); 
+        $dr = new NameDirectory('books');
+        di($dr->get_all_namedirectory());
+        $mysqli = $DB->get_records('SELECT  * FROM books where name like (?)',array('name'=>"'%i%'"));
     ?>
     <div id="react-container"></div>
     <script type="text/babel">
