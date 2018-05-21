@@ -103,3 +103,10 @@ ex
         )
     </script>
 
+CREATE TABLE `restaurant` (
+  `id` int(10) unsigned zerofill NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `phonenumber` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;

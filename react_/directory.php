@@ -13,7 +13,7 @@ class NameDirectory {
         $this->type = $type;
     }
     public function get_all_namedirectory(){
-
+        
     }
 }
 
@@ -54,7 +54,6 @@ class DBobject{
         $this->_username = 'root';
         $this->_dbname = 'searchandsort';
         $this->_password = '';
-
        
         $connect = $this->__connect();
         if(!$connect){
@@ -64,7 +63,7 @@ class DBobject{
         //catch error connection;
         try{
             $this->__connect();
-        }catch(Exception $error){
+        }catch(MongoConnectionException  $error){
             $connect = trigger_error('Caught Exception : '.$error->message);
         }finally{
             return $connect;
@@ -151,9 +150,9 @@ class DBobject{
                     $replace[$p] = $param;
                 }
                 $sql = preg_replace($patterns,$replace,$sql);
-            }di($sql);
+            }
             //get data
-            $record =  $this->_connect->query($sql);di($record);
+            $record =  $this->_connect->query($sql);
             if(!empty($record)){
             //fetch data as object
                 return mysqli_fetch_assoc($record);
@@ -169,4 +168,7 @@ function di($value){
     print_r($value);
     print_r('</pre>');
 }
+$DB =  DBobject::DBInstance();
+GLOBAL $DB;
+
 ?>
