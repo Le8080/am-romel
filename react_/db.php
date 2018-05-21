@@ -1,23 +1,5 @@
 <?php
 
-class NameDirectory {
-
-    var $type;
-    /**
-     * Directory CLass constructor
-     *
-     * @param string $type 
-     * @param object $DBconnections 
-     */
-    public function __construct($type){
-        $this->type = $type;
-    }
-<<<<<<< HEAD
-    public function get_all_namedirectory(){
-        
-    }
-}
-
 class DBobject{
     private static $_instance;
     private $_connect;
@@ -55,6 +37,7 @@ class DBobject{
         $this->_username = 'root';
         $this->_dbname = 'searchandsort';
         $this->_password = '';
+
        
         $connect = $this->__connect();
         if(!$connect){
@@ -64,7 +47,7 @@ class DBobject{
         //catch error connection;
         try{
             $this->__connect();
-        }catch(MongoConnectionException  $error){
+        }catch(Exception $error){
             $connect = trigger_error('Caught Exception : '.$error->message);
         }finally{
             return $connect;
@@ -81,19 +64,11 @@ class DBobject{
         return true;
     }
 
-=======
->>>>>>> 7e368943eb420b8d01bd5be90e89645ccac06316
     /**
-     * get all the name directory
+     * function to call on connecting to the datase
      *
-     * @param array $param
-     * @param string $orderfield
-     * @param string $ordertype DESC ASC
-     * @param integer $page
-     * @param integer $limit
      * @return void
      */
-<<<<<<< HEAD
     private function __connect(){
         return $this->_connect = new mysqli($this->_host,$this->_username,$this->_password,$this->_dbname);
     }
@@ -130,7 +105,7 @@ class DBobject{
             $record =  $this->_connect->query($sql);
             if(!empty($record)){
                 //fetch data as object
-                return mysqli_fetch_object($record);
+                return  ($record);
             }
         }
         return false;
@@ -144,50 +119,37 @@ class DBobject{
      * @return array
      */
     public function get_records($sql = '', $params = array()){
-        if($sql AND !empty($params)){
-            preg_match_all('(:|\?)',$sql,$matches);
-            $totalmatches = count($matches[0]);
-            $totalcondition = count($params);
-            if(in_array('?',$matches[0])){
-                //check if the query condition consist the same count on provided parameters for our Where Clause
-                if($totalcondition < $totalmatches){
-                    return trigger_error('Caught Exception : Expecting '.$totalmatches.' but recieves '.$totalcondition);
+        if($sql){
+            if(!empty($params)){
+                preg_match_all('(:|\?)',$sql,$matches);
+                $totalmatches = count($matches[0]);
+                $totalcondition = count($params);
+                if(in_array('?',$matches[0])){
+                    //check if the query condition consist the same count on provided parameters for our Where Clause
+                    if($totalcondition < $totalmatches){
+                        return trigger_error('Caught Exception : Expecting '.$totalmatches.' but recieves '.$totalcondition);
+                    }
+                    foreach($params as $param){
+                        $sql = preg_replace('/\?/',$param,$sql,1);
+                    }
+                }else if(in_array(':',$matches[0])){
+                    foreach($params as $p=>$param){
+                        $patterns[$p] = "/:$p/";
+                        $replace[$p] = $param;
+                    }   
+                    $sql = preg_replace($patterns,$replace,$sql);
                 }
-            }else if(in_array(':',$matches[0])){
-                foreach($params as $p=>$param){
-                    $patterns[$p] = "/:$p/";
-                    $replace[$p] = $param;
-                }
-                $sql = preg_replace($patterns,$replace,$sql);
             }
             //get data
             $record =  $this->_connect->query($sql);
             if(!empty($record)){
             //fetch data as object
-                return mysqli_fetch_assoc($record);
+                return mysqli_fetch_all($record);
+            }else{
+                return false;
             }
         }
 
         return false;        
-=======
-    public function get_all_namedirectory($param = array(),$orderfield = '',$ordertype = '',$page = 0, $limit = 0){
-        global $DB;
-        if($orderfield)
-            $orderfield = 'ORDER by '.$orderfield;
-        if($ordertype)
-            $orderfield .=' '.$ordertype;
-       return $records = $DB->get_records('SELECT * FROM '.$this->type.' '.E, $param);
->>>>>>> 7e368943eb420b8d01bd5be90e89645ccac06316
     }
 }
-
-
-function di($value){
-    print_r('<pre>');
-    print_r($value);
-    print_r('</pre>');
-}
-$DB =  DBobject::DBInstance();
-GLOBAL $DB;
-
-?>

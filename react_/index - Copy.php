@@ -79,8 +79,6 @@
             </div>
         </div> 
     </div>
-
-
     <div id="react-container"></div>
     <script type="text/babel">
 
