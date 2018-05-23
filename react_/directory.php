@@ -3,7 +3,7 @@ require_once('db.php');
 
 $DB =  DBobject::DBInstance();
 GLOBAL $DB;
-class Directories extends DirectoryWebservice {
+class Directories {
     var $categories;
     var $type;
     /**
