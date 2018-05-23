@@ -1,5 +1,4 @@
 add chrome developer react extensions
-https://phppot.com/php/php-restful-web-service/
 
 *JSX - javascript as XML
 *Babel - compile JSX into javascript

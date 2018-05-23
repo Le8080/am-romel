@@ -1,9 +1,6 @@
 <?php
-require_once('db.php');
 
-$DB =  DBobject::DBInstance();
-GLOBAL $DB;
-class Directories extends DirectoryWebservice {
+class Directories {
     var $categories;
     var $type;
     /**
@@ -22,8 +19,10 @@ class Directories extends DirectoryWebservice {
         return $records;
     }
 
-    public function get_directory($param){
-        
+    public function get_directory($type,$param){
+        global $DB;
+        $records = $DB->get_record($type,$param);
+        return $records;
     }
     public function set_categories(){
         $categories = new stdClass();
@@ -31,9 +30,10 @@ class Directories extends DirectoryWebservice {
         $categories->hotel = 'Hotel';
         $categories->restaurant = 'Restaurant';
         $categories->school = 'School';
+        return $categories;
     }
     public function get_categories(){
-
+        return $this->categories;
     }
 
     public function get_category(){

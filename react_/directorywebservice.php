@@ -10,10 +10,10 @@ Class DirectoryWebservice {
      * @param int $statcode
      * @return void
      */
-    public function set_headers($contenttype,$statcode){
+    public function set_headers($contenttype = 'application/json',$statcode){
         $statmsg = $this->get_status($statcode);
         header($this->httpversion." " .$statcode." ".$statmsg);
-        header("Content-Type:". $contentType);
+        header("Content-Type:". $contenttype);
     }
 
     /**
