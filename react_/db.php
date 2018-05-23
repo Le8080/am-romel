@@ -96,8 +96,8 @@ class DBobject{
             //setup query params
             foreach($params as $p=>$param){
                 if(!empty($whereparam))
-                    $whereparam .=" AND $p = $param ";
-                else $whereparam .=" $p = $param ";
+                    $whereparam .=" AND $p = '$param' ";
+                else $whereparam .=" $p = '$param' ";
             }
             //prepare sql
             $sql = "SELECT * FROM $table where $whereparam LIMIT 1";
@@ -105,7 +105,7 @@ class DBobject{
             $record =  $this->_connect->query($sql);
             if(!empty($record)){
                 //fetch data as object
-                return  ($record);
+                return  (mysqli_fetch_object($record));
             }
         }
         return false;
@@ -144,7 +144,12 @@ class DBobject{
             $record =  $this->_connect->query($sql);
             if(!empty($record)){
             //fetch data as object
-                return mysqli_fetch_all($record);
+                $records = array();
+                while($row  =mysqli_fetch_object($record)){
+                    $records[$row->id] = $row;
+                }
+                return $records;
+                return mysqli_fetch_object($record);
             }else{
                 return false;
             }
