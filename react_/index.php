@@ -32,51 +32,8 @@
                   </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-2">
-                <ul class="list-group list-group-flush directorycateg">
-                  <li class="list-group-item">Business</li>
-                  <li class="list-group-item">Hotel</li>
-                  <li class="list-group-item">School</li>
-                  <li class="list-group-item">Restaurant</li>
-                </ul>
-            </div>
-            <div class="col-8">
-              <div class="container-fluid directorylist">
-                <ul class="list-group list-group-flush">
-                  <li class="list-group-item">
-                      <div class="directory-list">
-                        <h5  class="directory-header-info">Google</h5>
-                        <div class="directory-info">
-                            <span class="address">
-                            <span class="fa fa-map-marker faicons"></span> 10 Commonwealth Road, Pyrmont, Australia</span> <br/>
-                            <span class="phone"><span class="fa fa-phone faicons"></span> 02 550 4231</span>
-                        </div>
-                      </div>
-                  </li>
-                <li class="list-group-item">
-                      <div class="directory-list">
-                        <h5  class="directory-header-info">Google</h5>
-                        <div class="directory-info">
-                            <span class="address">
-                            <span class="fa fa-map-marker faicons"></span> 10 Commonwealth Road, Pyrmont, Australia</span> <br/>
-                            <span class="phone"><span class="fa fa-phone faicons"></span> 02 550 4231</span>
-                        </div>
-                      </div>
-                  </li>
-                 <li class="list-group-item">
-                      <div class="directory-list">
-                        <h5  class="directory-header-info">Google</h5>
-                        <div class="directory-info">
-                            <span class="address">
-                            <span class="fa fa-map-marker faicons"></span> 10 Commonwealth Road, Pyrmont, Australia</span> <br/>
-                            <span class="phone"><span class="fa fa-phone faicons"></span> 02 550 4231</span>
-                        </div>
-                      </div>
-                  </li>
-                </ul>
-              </div>  
-            </div>
+        <div class="container-fluid directory" id="directory-container">
+
         </div> 
     </div>
     <div id="react-container"></div>

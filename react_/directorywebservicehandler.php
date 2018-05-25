@@ -6,6 +6,7 @@ $DB =  DBobject::DBInstance();
 global $DB;
 class DirectoryHandle extends DirectoryWebservice{
     private $directory;
+    private $type;
 
 	/**
 	 * Construct directory handle
@@ -13,6 +14,7 @@ class DirectoryHandle extends DirectoryWebservice{
     public function __construct(){
         require_once('directory.php');
         $this->directory = new Directories();
+        $this->type = $this->directory->get_type();
     }
 	
 	/**
@@ -49,11 +51,22 @@ class DirectoryHandle extends DirectoryWebservice{
 
 		return self::return_response($directory);
 	}
-	function get_categories(){
-		$category = $this->directory->get_categories();
-		$category = json_encode((array)$category);
+	function get_type(){
+		$category = $this->type;
+		$category = $category;
 
 		return self::return_response($category);
+	}
+	function get_all_data(){
+		$data = array();
+	
+		foreach($this->type as $t=>$type){
+			$data[$t]=array();
+			//directories param
+			$data[$t]['name']=$type;
+			$data[$t]['data']=$this->directory->get_directories($t);
+		}
+		return self::return_response($data);
 	}
     private function encodeHtml($responseData) {
 		$htmlResponse = "<table border='1'>";

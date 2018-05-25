@@ -10,7 +10,7 @@ class Directories {
      * @param object $DBconnections 
      */
     public function __construct(){
-        $this->categories = $this->set_categories();
+        $this->categories = $this->set_type();
     }
 
     public function get_directories($type){
@@ -24,21 +24,17 @@ class Directories {
         $records = $DB->get_record($type,$param);
         return $records;
     }
-    public function set_categories(){
+    public function set_type(){
         $categories = new stdClass();
-        $categories->business = 'Business';
         $categories->hotel = 'Hotel';
         $categories->restaurant = 'Restaurant';
         $categories->school = 'School';
         return $categories;
     }
-    public function get_categories(){
+    public function get_type(){
         return $this->categories;
     }
 
-    public function get_category(){
-
-    }
 
     public function get_directory_details(){
 
