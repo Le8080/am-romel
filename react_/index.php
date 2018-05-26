@@ -18,23 +18,8 @@
     <title>React-Directory</title>
 </head>
 <body>
-    <div class="container-fluid directory">
-        <div class="row">
-           <div class="col-md-2">
-               <div class="logo-txt">LF</div>
-           </div>
-            <div class="col-md-8">
-                  <div class="input-group mb-2 mr-sm-2">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text searchbutton"><li class="fa fa-search"></li></div>
-                    </div>
-                    <input type="text" class="form-control searchinput" id="inlineFormInputGroupUsername2" placeholder="Search">
-                  </div>
-            </div>
-        </div>
-        <div class="container-fluid directory" id="directory-container">
+    <div class="container-fluid directory" id="directory-container">
 
-        </div> 
     </div>
     <div id="react-container"></div>
     <script type="text/babel" src="react.js"></script>

@@ -1,4 +1,5 @@
 <?php
+
 require_once('directorywebservice.php');
 require_once('db.php');
 $DB =  DBobject::DBInstance();
@@ -23,14 +24,27 @@ class DirectoryHandle extends DirectoryWebservice{
 	 * @return void
 	 */
 	function get_directories($params){
-		//check if param exists
+		//check if required param exists
 		if(!isset($params['type']) && empty($params['type'] && !is_string($params['type'])))
 			throw new InvalidArgumentException('Param type is invalid or empty');
         //get directories
         $directories = $this->directory->get_directories($params['type']);
 		return self::return_response($directories);
     }
-
+	function search_directory($params){
+		//checki if required param exists
+		if(!isset($params['type']) && empty($params['type'] && !is_string($params['type'])))
+			throw new InvalidArgumentException('Param type is invalid or empty');
+		if(!isset($params['searchkey']))
+			throw new InvalidArgumentException('Param searchkey is invalid or empty');
+		if(!isset($params['searchin']))
+			throw new InvalidArgumentException('Param searchin is invalid or empty');
+		
+		//get the records
+		$sql = "SELECT * FROM :type where :searchin LIKE '%:searchkey%' ";
+		$directories = $this->directory->get_sql_directories($sql,$params);
+		return self::return_response($directories);
+	}
     function get_directory($params){
 
 		$type = $params['type'];
@@ -92,8 +106,8 @@ class DirectoryHandle extends DirectoryWebservice{
 	private function return_response($data){
 		$contenttype = 'application/json';
 		if(empty($data)){
-            $statuscode = 404;
-            $data = array('error'=>$params['type'].' has no records');
+			$statuscode = 404;
+			$data = array('error'=>'No Records');
         }else{
             $statuscode = 200;
 		}

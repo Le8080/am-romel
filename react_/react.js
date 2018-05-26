@@ -1,6 +1,6 @@
 //import React, { Component } from 'react';
 const typeAPI = 'http://react/directorywebservicehandler.php?function=get_type';
-const directoriesAPI = 'http://react/directorywebservicehandler.php?function=get_directories';
+const directoriesurl = 'http://react/directorywebservicehandler.php?';
 const getConfigs = {method : 'GET',
                     headers : { 'Accept' : 'application/json', 
                                 'Content-Type': 'application/json'}
@@ -13,9 +13,11 @@ class Directory extends React.Component {
         this.state = {
             type: [],
             activetype : 'hotel',
-            directories: []
+            directories: [],
+            directoriesAPI : directoriesurl.concat('function=get_directories&params[type]=hotel')
         }
-        this.handleCheck = this.handleCheck.bind(this)
+        //this.handleCheck = this.handleCheck.bind(this)
+        this.handleChange = this.handleChange.bind(this);
     }
     componentDidMount() {
         this.getType()
@@ -23,20 +25,38 @@ class Directory extends React.Component {
     }
     handleCheck(){
         this.setState({activetype:'hotel'})
+        this.setState({directoriesAPI : directoriesurl.concat('function=get_directories&params[type]=',this.state.activetype)})
     }
     getType(){
         fetch(typeAPI,getConfigs)
         .then(response => {return response.json()})
         .then(data => {
             const liclass = ' list-group-item';
-            let category = Object.keys(data).map((key)=><a href='#'  key={'link'+key}  onClick={this.updateDirectory.bind(this)}> <li key={key} className={liclass}>{data[key]}</li></a>);
+            let category = Object.keys(data).map((key)=><a href='#'  key={'link'+key}  onClick={() => this.handleChange(key,'get_directories')}> <li key={key} className={liclass}>{data[key]}</li></a>);
             return this.setState({type: category})
             })
     }
+    handleChange(e,func,otherparam = '') {
+        this.setState({activetype : e},()=>{
+            if(otherparam){
+                if(otherparam == 'searchin')
+                    var searchkey =document.getElementById('searchDirectory').value;
+                    otherparam ='&params[searchin]=name&params[searchkey]='+searchkey;
+            }
+            this.setState({ directoriesAPI: directoriesurl.concat('function=',func,'&params[type]=',this.state.activetype,otherparam)}, () => {
+                this.displayDirectory()}
+            )
+         }
+        );
+      }
     displayDirectory(){
-        fetch(directoriesAPI.concat('&params[type]=',this.state.activetype),getConfigs)
+        fetch(this.state.directoriesAPI,getConfigs)
         .then(response => {return response.json()})
         .then(data =>{
+            if(typeof data.error != 'undefined'){
+            console.log(data.error)
+                return this.setState({directories : <span>No Records</span>})
+            }
           let directories =  Object.keys(data).map((key)=>
             <li className="list-group-item" key={key}>
                 <div className="directory-list">
@@ -52,32 +72,40 @@ class Directory extends React.Component {
             return this.setState({directories: directories });
         })
     }
-    updateDirectory(e){
-        this.setState({activetype : 'school'})
-        console.log(e.target.key)
-       // this.displayDirectory()
-    }
     render(){
         const type = this.state.type
         const directories = this.state.directories
-        
         return (
-            <div className="row">
-            
-                <div className="col-2">
-                    <ul className="list-group list-group-flush directorycateg" >
-                        {type}
-                    </ul>
+            <div>
+                <div className="row">
+                    <div className="col-md-2">
+                        <div className="logo-txt">LF</div>
+                    </div>
+                    <div className="col-md-8">
+                        <div className="input-group mb-2 mr-sm-2">
+                            <div className="input-group-prepend">
+                                <div className="input-group-text searchbutton"><li className="fa fa-search"></li></div>
+                            </div>
+                            <input type="text" className="form-control searchinput" id="searchDirectory"  onChange={() => this.handleChange(this.state.activetype,'search_directory','searchin')} placeholder="Search"/>
+                        </div>
+                    </div>
+
                 </div>
-                <div className="col-8">
-                    <div className="container-fluid directorylist">
-                        <ul className="list-group list-group-flush">
-                            {directories}
+                <div className="row">
+                    <div className="col-2">
+                        <ul className="list-group list-group-flush directorycateg" >
+                            {type}
                         </ul>
-                    </div>  
+                    </div>
+                    <div className="col-8">
+                        <div className="container-fluid directorylist">
+                            <ul className="list-group list-group-flush">
+                                {directories}
+                            </ul>
+                        </div>  
+                    </div>
                 </div>
             </div>
-
         )
     }
     

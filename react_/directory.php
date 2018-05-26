@@ -18,7 +18,11 @@ class Directories {
         $records = $DB->get_records('SELECT * from ? ',array($type));
         return $records;
     }
-
+    public function get_sql_directories($sql,$param){
+        global $DB;
+        $records = $DB->get_records($sql,$param);
+        return $records;
+    }
     public function get_directory($type,$param){
         global $DB;
         $records = $DB->get_record($type,$param);
